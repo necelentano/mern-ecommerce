@@ -1,0 +1,7 @@
+body {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+
+svg {
+  vertical-align: baseline !important;
+}
