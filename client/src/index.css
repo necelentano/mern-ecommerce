@@ -5,3 +5,7 @@ body {
 svg {
   vertical-align: baseline !important;
 }
+
+.ant-menu-horizontal:not(.ant-menu-dark) :nth-child(3) {
+  margin-left: auto;
+}
