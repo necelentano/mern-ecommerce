@@ -1,18 +1,17 @@
-import { useState } from 'react';
-import { Row, Col, Input, Button, Typography } from 'antd';
+import { Row, Col, Form, Input, Button, Typography } from 'antd';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { auth } from '../../firebase';
 
 const { Title } = Typography;
+const { Item } = Form;
 
 const Register = () => {
-  const [email, setEmail] = useState('');
+  const [form] = Form.useForm();
 
-  const handleSubmit = async (e) => {
-    //
-    e.preventDefault();
+  // submit user email and get link to complete registration
+  const submitEmail = async (email) => {
     const config = {
       url: 'http://localhost:3000/register/complete',
       handleCodeInApp: true,
@@ -26,29 +25,57 @@ const Register = () => {
 
     // Save user email in localStorage
     window.localStorage.setItem('emailForRegistration', email);
-    // Claer state - email
-    setEmail('');
+    // Claer input from email
+    form.resetFields();
+  };
+
+  const onFinish = ({ email }) => {
+    console.log('Success:', email);
+    submitEmail(email);
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
   };
 
   const registerForm = () => (
-    <form style={{ marginTop: 20 }}>
-      <Input
-        placeholder="Enter your email"
-        label="Type your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        size="large"
-        autoFocus
-      />
+    <Form
+      style={{ marginTop: 40 }}
+      form={form}
+      size="large"
+      name="register"
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+    >
+      <Item
+        name="email"
+        rules={[
+          {
+            type: 'email',
+            message: 'The input is not valid email!',
+          },
+          {
+            required: true,
+            message: 'Please input your email!',
+          },
+        ]}
+      >
+        <Input
+          placeholder="Enter your email"
+          //onChange={(e) => setEmail(e.target.value)}
+          size="large"
+          autoFocus
+        />
+      </Item>
       <Button
         type="primary"
-        onClick={handleSubmit}
+        htmlType="submit"
         style={{ marginTop: 20 }}
         size="large"
       >
         Register
       </Button>
-    </form>
+    </Form>
   );
 
   return (
