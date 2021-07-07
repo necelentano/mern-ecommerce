@@ -1,6 +1,5 @@
 import { Row, Col, Form, Input, Button, Typography } from 'antd';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 import { auth } from '../../firebase';
 
@@ -10,10 +9,10 @@ const { Item } = Form;
 const Register = () => {
   const [form] = Form.useForm();
 
-  // submit user email and get link to complete registration
+  // submit user email and get link to complete registration via email
   const submitEmail = async (email) => {
     const config = {
-      url: 'http://localhost:3000/register/complete',
+      url: process.env.REACT_APP_REGISTER_REDIRECT_URL,
       handleCodeInApp: true,
     };
 
@@ -60,12 +59,7 @@ const Register = () => {
           },
         ]}
       >
-        <Input
-          placeholder="Enter your email"
-          //onChange={(e) => setEmail(e.target.value)}
-          size="large"
-          autoFocus
-        />
+        <Input placeholder="Enter your email" size="large" autoFocus />
       </Item>
       <Button
         type="primary"
@@ -84,7 +78,6 @@ const Register = () => {
         <Title level={2} style={{ marginTop: 40 }}>
           Register
         </Title>
-        <ToastContainer />
         {registerForm()}
       </Col>
     </Row>
