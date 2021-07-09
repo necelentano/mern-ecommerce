@@ -6,13 +6,16 @@ import { auth } from '../../firebase';
 const { Title } = Typography;
 const { Item } = Form;
 
-const RegisterComplete = () => {
+const RegisterComplete = ({ history }) => {
   const [form] = Form.useForm();
 
   // get user email from localStorage and put it to form.email
   form.setFieldsValue({
     email: window.localStorage.getItem('emailForRegistration'),
   });
+
+  console.log(window.location.href);
+  console.log(window.localStorage.getItem('emailForRegistration'));
 
   const formItemLayout = {
     labelCol: {
@@ -45,8 +48,46 @@ const RegisterComplete = () => {
     },
   };
 
-  const onFinish = (values) => {
-    console.log('Success:', values);
+  const signInEmailLink = async (email, password) => {
+    //validation
+    if (password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+
+    try {
+      const result = await auth.signInWithEmailLink(
+        email,
+        window.location.href
+      );
+      console.log('RESULT', result);
+      if (result.user.emailVerified) {
+        // delete user email from localStorage
+        window.localStorage.removeItem('emailForRegistration');
+
+        // get current user
+        let user = auth.currentUser;
+
+        // set password for current user
+        await user.updatePassword(password);
+
+        // id token
+        const idTokenResult = await user.getIdTokenResult();
+        console.log('user', user, 'idTokenResult', idTokenResult);
+        // redux store
+        // will add later
+        // redirect
+        history.push('/');
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
+  const onFinish = ({ email, password }) => {
+    console.log('Success:', email);
+    signInEmailLink(email, password);
   };
 
   const onFinishFailed = (errorInfo) => {
