@@ -39,7 +39,7 @@ const Register = () => {
 
   const registerForm = () => (
     <Form
-      style={{ marginTop: 40 }}
+      style={{ marginTop: 20 }}
       form={form}
       size="large"
       name="register"
@@ -59,12 +59,16 @@ const Register = () => {
           },
         ]}
       >
-        <Input placeholder="Enter your email" size="large" autoFocus />
+        <Input
+          placeholder="Enter your email and check inbox"
+          size="large"
+          autoFocus
+        />
       </Item>
       <Button
         type="primary"
         htmlType="submit"
-        style={{ marginTop: 20 }}
+        style={{ marginTop: 10 }}
         size="large"
       >
         Register
@@ -73,14 +77,20 @@ const Register = () => {
   );
 
   return (
-    <Row>
-      <Col lg={{ span: 8, offset: 8 }} xs={{ span: 16, offset: 4 }}>
-        <Title level={2} style={{ marginTop: 40 }}>
-          Register
-        </Title>
-        {registerForm()}
-      </Col>
-    </Row>
+    <>
+      <Row>
+        <Col lg={{ span: 8, offset: 8 }} xs={{ span: 20, offset: 2 }}>
+          <Title level={2} style={{ marginTop: 40 }}>
+            Register
+          </Title>
+        </Col>
+      </Row>
+      <Row>
+        <Col lg={{ span: 8, offset: 8 }} xs={{ span: 20, offset: 2 }}>
+          {registerForm()}
+        </Col>
+      </Row>
+    </>
   );
 };
 
