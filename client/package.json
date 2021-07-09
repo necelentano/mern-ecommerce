@@ -11,9 +11,12 @@
     "mdb-react-ui-kit": "^1.0.0-beta7",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-toastify": "^7.0.4",
+    "redux": "^4.1.0",
+    "redux-devtools-extension": "^2.13.9",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
@@ -42,6 +45,7 @@
   },
   "devDependencies": {
     "eslint": "^7.29.0",
+    "eslint-config-airbnb": "^18.2.1",
     "eslint-config-node": "^4.1.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-node": "^11.1.0",
