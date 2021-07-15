@@ -6,15 +6,24 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import { BrowserRouter as Router } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './store/store';
+import { auth } from './firebase';
+import { authInfoSuccess } from './store/actions/authActions';
 
-ReactDOM.render(
-  //<React.StrictMode>
-  <Router>
-    <App />
-  </Router>,
-  //</React.StrictMode>
-  document.getElementById('root')
-);
+auth.onAuthStateChanged((user) => {
+  store.dispatch(authInfoSuccess(user));
+  ReactDOM.render(
+    //<React.StrictMode>
+    <Provider store={store}>
+      <Router>
+        <App />
+      </Router>
+    </Provider>,
+    //</React.StrictMode>
+    document.getElementById('root')
+  );
+});
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

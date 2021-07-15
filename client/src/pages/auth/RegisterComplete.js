@@ -1,21 +1,39 @@
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Form, Input, Button, Typography } from 'antd';
 import { toast } from 'react-toastify';
 
-import { auth } from '../../firebase';
+import { signUp } from '../../store/actions/authActions';
 
 const { Title } = Typography;
 const { Item } = Form;
 
 const RegisterComplete = ({ history }) => {
   const [form] = Form.useForm();
+  const dispatch = useDispatch();
+  const { signupInProgress, isAuthenticated, signupError } = useSelector(
+    (state) => state.auth
+  );
+  // const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  // const signupError = useSelector((state) => state.auth.signupError);
 
   // get user email from localStorage and put it to form.email
-  form.setFieldsValue({
-    email: window.localStorage.getItem('emailForRegistration'),
-  });
+  useEffect(() => {
+    form.setFieldsValue({
+      email: window.localStorage.getItem('emailForRegistration'),
+    });
+  }, [form]);
 
-  console.log(window.location.href);
-  console.log(window.localStorage.getItem('emailForRegistration'));
+  useEffect(() => {
+    if (isAuthenticated) {
+      toast.info('You are logged in already.');
+      return history.push('/');
+    }
+
+    if (signupError) {
+      history.push('/register');
+    }
+  }, [history, signupError, isAuthenticated]);
 
   const formItemLayout = {
     labelCol: {
@@ -48,46 +66,13 @@ const RegisterComplete = ({ history }) => {
     },
   };
 
-  const signInEmailLink = async (email, password) => {
-    //validation
+  const onFinish = ({ email, password }) => {
+    // simple validation
     if (password.length < 6) {
       toast.error('Password must be at least 6 characters');
       return;
     }
-
-    try {
-      const result = await auth.signInWithEmailLink(
-        email,
-        window.location.href
-      );
-      console.log('RESULT', result);
-      if (result.user.emailVerified) {
-        // delete user email from localStorage
-        window.localStorage.removeItem('emailForRegistration');
-
-        // get current user
-        let user = auth.currentUser;
-
-        // set password for current user
-        await user.updatePassword(password);
-
-        // id token
-        const idTokenResult = await user.getIdTokenResult();
-        console.log('user', user, 'idTokenResult', idTokenResult);
-        // redux store
-        // will add later
-        // redirect
-        history.push('/');
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-    }
-  };
-
-  const onFinish = ({ email, password }) => {
-    console.log('Success:', email);
-    signInEmailLink(email, password);
+    dispatch(signUp(email, password));
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -163,14 +148,20 @@ const RegisterComplete = ({ history }) => {
         <Input.Password placeholder="Enter your password" size="large" />
       </Item>
       <Item {...tailFormItemLayout}>
-        <Button
-          type="primary"
-          htmlType="submit"
-          style={{ marginTop: 10 }}
-          size="large"
-        >
-          Complete Registration
-        </Button>
+        {signupInProgress ? (
+          <Button type="primary" style={{ marginTop: 10 }} size="large" loading>
+            Complete Registration
+          </Button>
+        ) : (
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{ marginTop: 10 }}
+            size="large"
+          >
+            Complete Registration
+          </Button>
+        )}
       </Item>
     </Form>
   );

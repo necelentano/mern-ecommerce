@@ -1,0 +1,140 @@
+import { auth } from '../../firebase';
+import { toast } from 'react-toastify';
+
+import {
+  AUTH_INFO_SUCCESS,
+  SEND_EMAIL_REQUEST,
+  SEND_EMAIL_SUCCESS,
+  SEND_EMAIL_ERROR,
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+  LOGIN_ERROR,
+  SIGNUP_REQUEST,
+  SIGNUP_SUCCESS,
+  SIGNUP_ERROR,
+  LOGOUT_REQUEST,
+  LOGOUT_SUCCESS,
+  LOGOUT_ERROR,
+} from '../actions/types';
+
+export const sendEmailInRequest = () => ({ type: SEND_EMAIL_REQUEST });
+export const sendEmailSuccess = () => ({ type: SEND_EMAIL_SUCCESS });
+export const sendEmailError = (e) => ({ type: SEND_EMAIL_ERROR, payload: e });
+
+export const loginRequest = () => ({ type: LOGIN_REQUEST });
+export const loginSuccess = () => ({ type: LOGIN_SUCCESS });
+export const loginError = (e) => ({ type: LOGIN_ERROR, payload: e });
+
+export const signupRequest = () => ({ type: SIGNUP_REQUEST });
+export const signupSuccess = (user) => ({
+  type: SIGNUP_SUCCESS,
+  payload: user,
+});
+export const signupError = (e) => ({ type: SIGNUP_ERROR, payload: e });
+
+export const logoutRequest = () => ({ type: LOGOUT_REQUEST });
+export const logoutSuccess = () => ({ type: LOGOUT_SUCCESS });
+export const logoutError = (e) => ({ type: LOGOUT_ERROR, payload: e });
+
+export const authInfoSuccess = (user) => ({
+  type: AUTH_INFO_SUCCESS,
+  payload: user,
+});
+
+// ERROR HANDLING -- START
+// Error Codes
+const LINK_ALREADY_USED = 'auth/invalid-action-code';
+const LINK_IS_BROKEN = 'auth/argument-error';
+
+// Error message handler
+const displayErrorMessage = (error) => {
+  switch (error.code) {
+    case LINK_ALREADY_USED:
+      return `Registration link has already been used! Please send a new registration link to your email!`;
+    case LINK_IS_BROKEN:
+      return `Registration link is broken. Please send a new registration link to your email!`;
+    default:
+      return 'Something went wrong. Try again';
+  }
+};
+// ERROR HANDLING -- FINISH
+
+// Send Email link for signup
+export const sendEmail = (email) => async (dispatch) => {
+  const config = {
+    url: process.env.REACT_APP_REGISTER_REDIRECT_URL,
+    handleCodeInApp: true,
+  };
+
+  try {
+    dispatch(sendEmailInRequest());
+
+    await auth.sendSignInLinkToEmail(email, config);
+
+    toast.success(
+      `Email is sent to ${email}. Click the link to complete your registration.`
+    );
+
+    // Save user email in localStorage
+    window.localStorage.setItem('emailForRegistration', email);
+
+    dispatch(sendEmailSuccess());
+  } catch (error) {
+    dispatch(sendEmailError(error.message));
+    console.log(error.message);
+  }
+};
+
+export const signUp = (email, password) => async (dispatch) => {
+  try {
+    dispatch(signupRequest());
+
+    const result = await auth.signInWithEmailLink(email, window.location.href); // in case with broken "email link" get Uncought errror in console
+
+    console.log('RESULT', result);
+
+    if (result.user.emailVerified) {
+      // delete user email from localStorage
+      window.localStorage.removeItem('emailForRegistration');
+
+      // get current user
+      let user = auth.currentUser;
+
+      // set password for current user
+      await user.updatePassword(password);
+
+      // id token
+      const idTokenResult = await user.getIdTokenResult();
+
+      console.log(
+        'authActions -- user',
+        user,
+        'authActions -- idTokenResult',
+        idTokenResult
+      );
+
+      // redux store
+      dispatch(signupSuccess());
+
+      // notification
+      toast.success(`Сongratulations, your account ${email} has been created!`);
+    }
+  } catch (error) {
+    console.log('AuthActions -- SIGNUP ERROR CODE', error.code);
+
+    dispatch(signupError(error));
+
+    toast.error(displayErrorMessage(error));
+  }
+};
+
+// Login user
+
+export const login =
+  ({ email, password }) =>
+  (dispatch) => {
+    //
+  };
+
+// Logot user
+export const logout = () => ({ type: LOGOUT_SUCCESS });

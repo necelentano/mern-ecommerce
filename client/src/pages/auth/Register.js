@@ -1,36 +1,40 @@
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Row, Col, Form, Input, Button, Typography } from 'antd';
-import { toast } from 'react-toastify';
 
-import { auth } from '../../firebase';
+import { sendEmail } from '../../store/actions/authActions';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { Item } = Form;
 
-const Register = () => {
+const Register = (props) => {
   const [form] = Form.useForm();
+  const dispatch = useDispatch();
+  const sendEmailInProgress = useSelector(
+    (state) => state.auth.sendEmailInProgress
+  );
 
   // submit user email and get link to complete registration via email
-  const submitEmail = async (email) => {
-    const config = {
-      url: process.env.REACT_APP_REGISTER_REDIRECT_URL,
-      handleCodeInApp: true,
-    };
+  // const submitEmail = async (email) => {
+  //   const config = {
+  //     url: process.env.REACT_APP_REGISTER_REDIRECT_URL,
+  //     handleCodeInApp: true,
+  //   };
 
-    await auth.sendSignInLinkToEmail(email, config);
+  //   await auth.sendSignInLinkToEmail(email, config);
 
-    toast.success(
-      `Email is sent to ${email}. Click the link to complete your registration.`
-    );
+  //   toast.success(
+  //     `Email is sent to ${email}. Click the link to complete your registration.`
+  //   );
 
-    // Save user email in localStorage
-    window.localStorage.setItem('emailForRegistration', email);
-    // Claer input from email
-    form.resetFields();
-  };
+  //   // Save user email in localStorage
+  //   window.localStorage.setItem('emailForRegistration', email);
+  //   // Claer input from email
+  //   form.resetFields();
+  // };
 
   const onFinish = ({ email }) => {
-    console.log('Success:', email);
-    submitEmail(email);
+    dispatch(sendEmail(email));
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -65,14 +69,20 @@ const Register = () => {
           autoFocus
         />
       </Item>
-      <Button
-        type="primary"
-        htmlType="submit"
-        style={{ marginTop: 10 }}
-        size="large"
-      >
-        Register
-      </Button>
+      {sendEmailInProgress ? (
+        <Button type="primary" style={{ marginTop: 10 }} size="large" loading>
+          Send Email
+        </Button>
+      ) : (
+        <Button
+          type="primary"
+          htmlType="submit"
+          style={{ marginTop: 10 }}
+          size="large"
+        >
+          Send Email
+        </Button>
+      )}
     </Form>
   );
 
@@ -83,6 +93,7 @@ const Register = () => {
           <Title level={2} style={{ marginTop: 40 }}>
             Register
           </Title>
+          <Text>Please send a registration link to a valid email!</Text>
         </Col>
       </Row>
       <Row>
