@@ -137,4 +137,20 @@ export const login =
   };
 
 // Logot user
-export const logout = () => ({ type: LOGOUT_SUCCESS });
+export const logout = () => async (dispatch) => {
+  try {
+    dispatch(logoutRequest());
+
+    await auth.signOut();
+
+    dispatch(logoutSuccess());
+
+    toast.info('You are succeccfuly logged out!');
+  } catch (error) {
+    console.log(error);
+
+    dispatch(logoutError(error));
+
+    toast.error(error.message);
+  }
+};

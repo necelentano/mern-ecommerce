@@ -70,7 +70,12 @@ export const authReducer = (state = initialState, action = {}) => {
     case LOGOUT_REQUEST:
       return { ...state, logoutInProgress: true, logoutError: null };
     case LOGOUT_SUCCESS:
-      return { ...state, logoutInProgress: false, isAuthenticated: false };
+      return {
+        ...state,
+        logoutInProgress: false,
+        isAuthenticated: false,
+        user: null,
+      };
     case LOGOUT_ERROR:
       return { ...state, logoutInProgress: false, logoutError: payload };
     default:
