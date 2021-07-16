@@ -1,4 +1,4 @@
-import { auth } from '../../firebase';
+import { auth, googleAuthProvider } from '../../firebase';
 import { toast } from 'react-toastify';
 
 import {
@@ -9,6 +9,9 @@ import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
+  LOGIN_GOOGLE_REQUEST,
+  LOGIN_GOOGLE_SUCCESS,
+  LOGIN_GOOGLE_ERROR,
   SIGNUP_REQUEST,
   SIGNUP_SUCCESS,
   SIGNUP_ERROR,
@@ -24,6 +27,13 @@ export const sendEmailError = (e) => ({ type: SEND_EMAIL_ERROR, payload: e });
 export const loginRequest = () => ({ type: LOGIN_REQUEST });
 export const loginSuccess = () => ({ type: LOGIN_SUCCESS });
 export const loginError = (e) => ({ type: LOGIN_ERROR, payload: e });
+
+export const loginGoogleRequest = () => ({ type: LOGIN_GOOGLE_REQUEST });
+export const loginGoogleSuccess = () => ({ type: LOGIN_GOOGLE_SUCCESS });
+export const loginGoogleError = (e) => ({
+  type: LOGIN_GOOGLE_ERROR,
+  payload: e,
+});
 
 export const signupRequest = () => ({ type: SIGNUP_REQUEST });
 export const signupSuccess = () => ({ type: SIGNUP_SUCCESS });
@@ -140,6 +150,30 @@ export const login = (email, password) => async (dispatch) => {
     console.log(error);
 
     dispatch(loginError(error.message));
+
+    toast.error(error.message);
+  }
+};
+
+// Login with Google
+
+export const googleLogin = (email, password) => async (dispatch) => {
+  try {
+    dispatch(loginGoogleRequest());
+
+    const result = await auth.signInWithPopup(googleAuthProvider);
+
+    const { user } = result;
+
+    const idTokenResult = await user.getIdTokenResult();
+
+    console.log('authActions--login =>', user, idTokenResult);
+
+    dispatch(loginGoogleSuccess());
+  } catch (error) {
+    console.log(error);
+
+    dispatch(loginGoogleError(error.message));
 
     toast.error(error.message);
   }

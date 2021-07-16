@@ -6,6 +6,9 @@ import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
+  LOGIN_GOOGLE_REQUEST,
+  LOGIN_GOOGLE_SUCCESS,
+  LOGIN_GOOGLE_ERROR,
   SIGNUP_REQUEST,
   SIGNUP_SUCCESS,
   SIGNUP_ERROR,
@@ -22,6 +25,9 @@ const initialState = {
 
   loginInProgress: false,
   loginError: null,
+
+  loginGoogleInProgress: false,
+  loginGoogleError: null,
 
   signupInProgress: false,
   signupError: null,
@@ -55,6 +61,17 @@ export const authReducer = (state = initialState, action = {}) => {
       return { ...state, loginInProgress: false, isAuthenticated: true };
     case LOGIN_ERROR:
       return { ...state, loginInProgress: false, loginError: payload };
+
+    case LOGIN_GOOGLE_REQUEST:
+      return { ...state, loginGoogleInProgress: true, loginGoogleError: null };
+    case LOGIN_GOOGLE_SUCCESS:
+      return { ...state, loginGoogleInProgress: false, isAuthenticated: true };
+    case LOGIN_GOOGLE_ERROR:
+      return {
+        ...state,
+        loginGoogleInProgress: false,
+        loginGoogleError: payload,
+      };
 
     case SIGNUP_REQUEST:
       return { ...state, signupInProgress: true, signupError: null };

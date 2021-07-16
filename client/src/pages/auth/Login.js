@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Form, Input, Button, Typography } from 'antd';
-import { MailOutlined } from '@ant-design/icons';
+import { MailOutlined, GoogleOutlined } from '@ant-design/icons';
 import { toast } from 'react-toastify';
 
-import { login } from '../../store/actions/authActions';
+import { login, googleLogin } from '../../store/actions/authActions';
 
 const { Title } = Typography;
 const { Item } = Form;
@@ -12,15 +12,17 @@ const { Item } = Form;
 const Login = ({ history }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const { loginInProgress, isAuthenticated, loginError } = useSelector(
-    (state) => state.auth
-  );
+  const {
+    loginInProgress,
+    isAuthenticated,
+    loginGoogleInProgress,
+    loginError,
+  } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (isAuthenticated) {
       return history.push('/');
     }
-
     if (loginError) {
       history.push('/register');
     }
@@ -64,11 +66,16 @@ const Login = ({ history }) => {
       return;
     }
     dispatch(login(email, password));
-    history.push('/');
+
+    setTimeout(() => history.push('/'), 2000);
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
+  };
+
+  const onGoogleLogin = () => {
+    dispatch(googleLogin());
   };
 
   const loginForm = () => (
@@ -119,6 +126,7 @@ const Login = ({ history }) => {
             size="large"
             icon={<MailOutlined />}
             loading
+            block
           >
             Login with Email/Password
           </Button>
@@ -129,8 +137,34 @@ const Login = ({ history }) => {
             style={{ marginTop: 10 }}
             size="large"
             icon={<MailOutlined />}
+            block
           >
             Login with Email/Password
+          </Button>
+        )}
+        {loginGoogleInProgress ? (
+          <Button
+            type="primary"
+            style={{ marginTop: 10 }}
+            size="large"
+            icon={<GoogleOutlined />}
+            loading
+            danger
+            block
+          >
+            Login with Google
+          </Button>
+        ) : (
+          <Button
+            type="primary"
+            style={{ marginTop: 10 }}
+            size="large"
+            icon={<GoogleOutlined />}
+            danger
+            block
+            onClick={onGoogleLogin}
+          >
+            Login with Google
           </Button>
         )}
       </Item>
