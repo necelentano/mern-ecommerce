@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
 import { Menu } from 'antd';
@@ -19,6 +19,8 @@ const Header = () => {
   const [current, setCurrent] = useState('home');
   const dispatch = useDispatch();
   const history = useHistory();
+  const { user } = useSelector((state) => state.auth);
+  console.log('Header.js', user);
 
   const handleClick = (e) => {
     setCurrent(e.key);
@@ -34,19 +36,31 @@ const Header = () => {
       <Item key="home" icon={<AppstoreOutlined />}>
         <Link to="/">Home</Link>
       </Item>
-      <SubMenu key="SubMenu" icon={<SettingOutlined />} title="Username">
-        <Item key="setting:1">Option 1</Item>
-        <Item key="setting:2">Option 2</Item>
-        <Item key="setting:3" icon={<LogoutOutlined />} onClick={onLogout}>
-          Logout
+      {user && (
+        <SubMenu
+          key="SubMenu"
+          icon={<SettingOutlined />}
+          title={user.email}
+          className="ml-auto"
+        >
+          <Item key="setting:1">Option 1</Item>
+          <Item key="setting:2">Option 2</Item>
+          <Item key="setting:3" icon={<LogoutOutlined />} onClick={onLogout}>
+            Logout
+          </Item>
+        </SubMenu>
+      )}
+      {!user && (
+        <Item key="login" icon={<UserOutlined />} className="ml-auto">
+          <Link to="/login">Login</Link>
         </Item>
-      </SubMenu>
-      <Item key="login" icon={<UserOutlined />}>
-        <Link to="/login">Login</Link>
-      </Item>
-      <Item key="register" icon={<UserAddOutlined />}>
-        <Link to="/register">Register</Link>
-      </Item>
+      )}
+
+      {!user && (
+        <Item key="register" icon={<UserAddOutlined />}>
+          <Link to="/register">Register</Link>
+        </Item>
+      )}
     </Menu>
   );
 };
