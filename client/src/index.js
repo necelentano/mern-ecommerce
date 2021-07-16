@@ -11,8 +11,14 @@ import store from './store/store';
 import { auth } from './firebase';
 import { authInfoSuccess } from './store/actions/authActions';
 
-auth.onAuthStateChanged((user) => {
-  store.dispatch(authInfoSuccess(user));
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    const idTokenResult = await user.getIdTokenResult();
+    console.log('user -- index.js', user);
+    store.dispatch(
+      authInfoSuccess({ email: user.email, token: idTokenResult.token })
+    );
+  }
   ReactDOM.render(
     //<React.StrictMode>
     <Provider store={store}>

@@ -18,7 +18,6 @@ const Login = ({ history }) => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      toast.info('You are logged in already.');
       return history.push('/');
     }
 
@@ -65,6 +64,7 @@ const Login = ({ history }) => {
       return;
     }
     dispatch(login(email, password));
+    history.push('/');
   };
 
   const onFinishFailed = (errorInfo) => {

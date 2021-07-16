@@ -26,10 +26,7 @@ export const loginSuccess = () => ({ type: LOGIN_SUCCESS });
 export const loginError = (e) => ({ type: LOGIN_ERROR, payload: e });
 
 export const signupRequest = () => ({ type: SIGNUP_REQUEST });
-export const signupSuccess = (user) => ({
-  type: SIGNUP_SUCCESS,
-  payload: user,
-});
+export const signupSuccess = () => ({ type: SIGNUP_SUCCESS });
 export const signupError = (e) => ({ type: SIGNUP_ERROR, payload: e });
 
 export const logoutRequest = () => ({ type: LOGOUT_REQUEST });
@@ -103,15 +100,15 @@ export const signUp = (email, password) => async (dispatch) => {
       // set password for current user
       await user.updatePassword(password);
 
-      // id token
-      const idTokenResult = await user.getIdTokenResult();
+      // // id token
+      // const idTokenResult = await user.getIdTokenResult();
 
-      console.log(
-        'authActions -- user',
-        user,
-        'authActions -- idTokenResult',
-        idTokenResult
-      );
+      // console.log(
+      //   'authActions -- user',
+      //   user,
+      //   'authActions -- idTokenResult',
+      //   idTokenResult
+      // );
 
       // redux store
       dispatch(signupSuccess());
@@ -120,7 +117,7 @@ export const signUp = (email, password) => async (dispatch) => {
       toast.success(`Сongratulations, your account ${email} has been created!`);
     }
   } catch (error) {
-    console.log('AuthActions -- SIGNUP ERROR CODE', error.code);
+    //console.log('AuthActions -- SIGNUP ERROR CODE', error.code);
 
     dispatch(signupError(error));
 
@@ -130,11 +127,23 @@ export const signUp = (email, password) => async (dispatch) => {
 
 // Login user
 
-export const login =
-  ({ email, password }) =>
-  (dispatch) => {
-    //
-  };
+export const login = (email, password) => async (dispatch) => {
+  try {
+    dispatch(loginRequest());
+
+    const result = await auth.signInWithEmailAndPassword(email, password);
+
+    console.log('authActions--login =>', result.user);
+
+    dispatch(loginSuccess());
+  } catch (error) {
+    console.log(error);
+
+    dispatch(loginError(error.message));
+
+    toast.error(error.message);
+  }
+};
 
 // Logot user
 export const logout = () => async (dispatch) => {
