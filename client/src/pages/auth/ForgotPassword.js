@@ -3,39 +3,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Form, Input, Button, Typography } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 
-import { sendEmail } from '../../store/actions/authActions';
+import { forgotPassword } from '../../store/actions/authActions';
 
 const { Title, Text } = Typography;
 const { Item } = Form;
 
-const Register = () => {
+const ForgotPassword = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const sendEmailInProgress = useSelector(
-    (state) => state.auth.sendEmailInProgress
+  const sendForgotPasswordEmailInProgress = useSelector(
+    (state) => state.auth.sendForgotPasswordEmailInProgress
   );
 
-  // submit user email and get link to complete registration via email
-  // const submitEmail = async (email) => {
-  //   const config = {
-  //     url: process.env.REACT_APP_REGISTER_REDIRECT_URL,
-  //     handleCodeInApp: true,
-  //   };
-
-  //   await auth.sendSignInLinkToEmail(email, config);
-
-  //   toast.success(
-  //     `Email is sent to ${email}. Click the link to complete your registration.`
-  //   );
-
-  //   // Save user email in localStorage
-  //   window.localStorage.setItem('emailForRegistration', email);
-  //   // Claer input from email
-  //   form.resetFields();
-  // };
-
   const onFinish = ({ email }) => {
-    dispatch(sendEmail(email));
+    dispatch(forgotPassword(email));
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -70,13 +51,13 @@ const Register = () => {
           autoFocus
         />
       </Item>
-      {sendEmailInProgress ? (
+      {sendForgotPasswordEmailInProgress ? (
         <Button
           type="primary"
           style={{ marginTop: 10 }}
           size="large"
-          icon={<MailOutlined />}
           block
+          icon={<MailOutlined />}
           loading
         >
           Send Email
@@ -87,8 +68,8 @@ const Register = () => {
           htmlType="submit"
           style={{ marginTop: 10 }}
           size="large"
-          icon={<MailOutlined />}
           block
+          icon={<MailOutlined />}
         >
           Send Email
         </Button>
@@ -101,9 +82,9 @@ const Register = () => {
       <Row>
         <Col lg={{ span: 8, offset: 8 }} xs={{ span: 20, offset: 2 }}>
           <Title level={2} style={{ marginTop: 40 }}>
-            Register
+            Forgot Password
           </Title>
-          <Text>Please send a registration link to a valid email!</Text>
+          <Text>Please send a reset password link to a valid email!</Text>
         </Col>
       </Row>
       <Row>
@@ -115,4 +96,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default ForgotPassword;

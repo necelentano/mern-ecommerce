@@ -6,6 +6,9 @@ import {
   SEND_EMAIL_REQUEST,
   SEND_EMAIL_SUCCESS,
   SEND_EMAIL_ERROR,
+  SEND_FORGOT_PASSWORD_EMAIL_REQUEST,
+  SEND_FORGOT_PASSWORD_EMAIL_SUCCESS,
+  SEND_FORGOT_PASSWORD_EMAIL_ERROR,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
@@ -23,6 +26,17 @@ import {
 export const sendEmailInRequest = () => ({ type: SEND_EMAIL_REQUEST });
 export const sendEmailSuccess = () => ({ type: SEND_EMAIL_SUCCESS });
 export const sendEmailError = (e) => ({ type: SEND_EMAIL_ERROR, payload: e });
+
+export const sendForgotPasswordEmailInRequest = () => ({
+  type: SEND_FORGOT_PASSWORD_EMAIL_REQUEST,
+});
+export const sendForgotPasswordEmailSuccess = () => ({
+  type: SEND_FORGOT_PASSWORD_EMAIL_SUCCESS,
+});
+export const sendForgotPasswordEmailError = (e) => ({
+  type: SEND_FORGOT_PASSWORD_EMAIL_ERROR,
+  payload: e,
+});
 
 export const loginRequest = () => ({ type: LOGIN_REQUEST });
 export const loginSuccess = () => ({ type: LOGIN_SUCCESS });
@@ -194,6 +208,27 @@ export const logout = () => async (dispatch) => {
 
     dispatch(logoutError(error));
 
+    toast.error(error.message);
+  }
+};
+
+// Forgot Password
+export const forgotPassword = (email) => async (dispatch) => {
+  try {
+    dispatch(sendForgotPasswordEmailInRequest());
+
+    const config = {
+      url: process.env.REACT_APP_FORGOT_PASSWORD_REDIRECT_URL,
+      handleCodeInApp: true,
+    };
+
+    await auth.sendPasswordResetEmail(email, config).then(() => {
+      dispatch(sendForgotPasswordEmailSuccess());
+
+      toast.success('Please check your email for password reset link!');
+    });
+  } catch (error) {
+    dispatch(sendForgotPasswordEmailError(error));
     toast.error(error.message);
   }
 };

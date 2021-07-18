@@ -3,6 +3,9 @@ import {
   SEND_EMAIL_REQUEST,
   SEND_EMAIL_SUCCESS,
   SEND_EMAIL_ERROR,
+  SEND_FORGOT_PASSWORD_EMAIL_REQUEST,
+  SEND_FORGOT_PASSWORD_EMAIL_SUCCESS,
+  SEND_FORGOT_PASSWORD_EMAIL_ERROR,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
@@ -22,6 +25,9 @@ const initialState = {
 
   sendEmailInProgress: false,
   sendEmailError: null,
+
+  sendForgotPasswordEmailInProgress: false,
+  sendForgotPasswordEmailError: null,
 
   loginInProgress: false,
   loginError: null,
@@ -49,11 +55,30 @@ export const authReducer = (state = initialState, action = {}) => {
       };
 
     case SEND_EMAIL_REQUEST:
-      return { ...state, sendEmailInProgress: true, loginError: null };
+      return { ...state, sendEmailInProgress: true, sendEmailError: null };
     case SEND_EMAIL_SUCCESS:
       return { ...state, sendEmailInProgress: false, isAuthenticated: true };
     case SEND_EMAIL_ERROR:
-      return { ...state, sendEmailInProgress: false, loginError: payload };
+      return { ...state, sendEmailInProgress: false, sendEmailError: payload };
+
+    case SEND_FORGOT_PASSWORD_EMAIL_REQUEST:
+      return {
+        ...state,
+        sendForgotPasswordEmailInProgress: true,
+        sendForgotPasswordEmailError: null,
+      };
+    case SEND_FORGOT_PASSWORD_EMAIL_SUCCESS:
+      return {
+        ...state,
+        sendForgotPasswordEmailInProgress: false,
+        isAuthenticated: true,
+      };
+    case SEND_FORGOT_PASSWORD_EMAIL_ERROR:
+      return {
+        ...state,
+        sendForgotPasswordEmailInProgress: false,
+        sendForgotPasswordEmailError: payload,
+      };
 
     case LOGIN_REQUEST:
       return { ...state, loginInProgress: true, loginError: null };

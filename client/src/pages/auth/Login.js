@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Form, Input, Button, Typography } from 'antd';
 import { MailOutlined, GoogleOutlined } from '@ant-design/icons';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
 import { login, googleLogin } from '../../store/actions/authActions';
 
@@ -12,21 +13,14 @@ const { Item } = Form;
 const Login = ({ history }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const {
-    loginInProgress,
-    isAuthenticated,
-    loginGoogleInProgress,
-    loginError,
-  } = useSelector((state) => state.auth);
+  const { loginInProgress, isAuthenticated, loginGoogleInProgress } =
+    useSelector((state) => state.auth);
 
   useEffect(() => {
     if (isAuthenticated) {
       return history.push('/');
     }
-    if (loginError) {
-      history.push('/register');
-    }
-  }, [history, loginError, isAuthenticated]);
+  }, [history, isAuthenticated]);
 
   const formItemLayout = {
     labelCol: {
@@ -66,8 +60,6 @@ const Login = ({ history }) => {
       return;
     }
     dispatch(login(email, password));
-
-    setTimeout(() => history.push('/'), 2000);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -167,6 +159,9 @@ const Login = ({ history }) => {
             Login with Google
           </Button>
         )}
+      </Item>
+      <Item {...tailFormItemLayout}>
+        <Link to="forgot-password">Forgot Password?</Link>
       </Item>
     </Form>
   );
