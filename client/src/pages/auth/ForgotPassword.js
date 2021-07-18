@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Row, Col, Form, Input, Button, Typography } from 'antd';
@@ -8,12 +9,16 @@ import { forgotPassword } from '../../store/actions/authActions';
 const { Title, Text } = Typography;
 const { Item } = Form;
 
-const ForgotPassword = () => {
+const ForgotPassword = ({ history }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const sendForgotPasswordEmailInProgress = useSelector(
-    (state) => state.auth.sendForgotPasswordEmailInProgress
+  const { isAuthenticated, sendForgotPasswordEmailInProgress } = useSelector(
+    (state) => state.auth
   );
+
+  useEffect(() => {
+    if (isAuthenticated) return history.push('/');
+  }, [history, isAuthenticated]);
 
   const onFinish = ({ email }) => {
     dispatch(forgotPassword(email));

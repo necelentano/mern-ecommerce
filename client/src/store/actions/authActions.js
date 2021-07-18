@@ -106,6 +106,7 @@ export const sendEmail = (email) => async (dispatch) => {
   }
 };
 
+// Signup new user
 export const signUp = (email, password) => async (dispatch) => {
   try {
     dispatch(signupRequest());

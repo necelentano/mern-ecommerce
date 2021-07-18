@@ -17,9 +17,7 @@ const Login = ({ history }) => {
     useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      return history.push('/');
-    }
+    if (isAuthenticated) return history.push('/');
   }, [history, isAuthenticated]);
 
   const formItemLayout = {

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Row, Col, Form, Input, Button, Typography } from 'antd';
@@ -8,12 +9,16 @@ import { sendEmail } from '../../store/actions/authActions';
 const { Title, Text } = Typography;
 const { Item } = Form;
 
-const Register = () => {
+const Register = ({ history }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const sendEmailInProgress = useSelector(
-    (state) => state.auth.sendEmailInProgress
+  const { isAuthenticated, sendEmailInProgress } = useSelector(
+    (state) => state.auth
   );
+
+  useEffect(() => {
+    if (isAuthenticated) return history.push('/');
+  }, [history, isAuthenticated]);
 
   // submit user email and get link to complete registration via email
   // const submitEmail = async (email) => {
