@@ -2,10 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const cors = require('cors');
+const { readdirSync } = require('fs');
 require('dotenv').config();
-
-// import routes
-const authRoutes = require('./routes/auth');
 
 // app
 const app = express();
@@ -31,8 +29,10 @@ app.use(morgan('dev'));
 app.use(express.json({ limit: '2mb' }));
 app.use(cors());
 
-// routes middleware
-app.use('/api', authRoutes);
+// routes autoloading
+readdirSync('./routes').map((route) =>
+  app.use('/api', require('./routes/' + route))
+);
 
 const port = process.env.PORT || 8000;
 
